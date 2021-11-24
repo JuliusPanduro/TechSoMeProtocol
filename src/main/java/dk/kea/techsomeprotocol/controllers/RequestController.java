@@ -14,7 +14,7 @@ public class RequestController {
     @PostMapping("/")
     public String tmpName() {
         //get srcEmail srcHost desEmail desHost vers
-        String requestString = "block srcEmail srcHost desEmail desHost vers";
+        String requestString = "add srcEmail srcHost desEmail desHost vers";
         String[] splitter = requestString.split(" ");
         for (String item : splitter) {
             System.out.println(item);
@@ -26,8 +26,9 @@ public class RequestController {
         String desHost = splitter[4];
         String version = splitter[5];
 
+ //TODO still needs to be made with method calls and so on.
         switch (method) {
-            case "add": //des email gets a request to be friends (sends a response that is has been seen)
+            case "add": return "added"; //des email gets a request to be friends (sends a response that is has been seen)
             case "accept": //des email accepts the request and "link" the two emails together (sends a response that they are connected)
             case "deny": //des email denies the request (sends a response that invitation is denied)
             case "remove": //des email remove another email "unlink" the two emails (sends a response that they are unlinked)
@@ -36,7 +37,7 @@ public class RequestController {
         }
 
 
-        return "Hello " + httpStatus + 418;
+        return "Hello motherfucker" + httpStatus + 418;
     }
 
 //?method=get&src=a@b.c&src_host=deresIPadresse

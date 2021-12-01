@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-
 /**
  * @author Julius Panduro
  */
@@ -32,7 +30,7 @@ public class RequestController {
     @PostMapping("/")
     public HttpStatus tmpName() {
         //method sp srcEmail sp srcHost sp desEmail sp desHost sp version cr lf
-        String requestString = "block srcEmail srcHost desEmail desHost vers";
+        String requestString = "add srcEmail srcHost desEmail desHost vers";
         String[] splitter = requestString.split(" ");
         for (String item : splitter) {
             System.out.println(item);

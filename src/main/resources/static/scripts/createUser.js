@@ -1,4 +1,4 @@
-const baseUrl = "localhost:8080";
+const baseUrl = "http://localhost:8080";
 
 document.getElementById('create-user-button').addEventListener('click', createUser);
 

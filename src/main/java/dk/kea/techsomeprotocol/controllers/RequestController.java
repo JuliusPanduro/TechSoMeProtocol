@@ -5,6 +5,7 @@ import dk.kea.techsomeprotocol.models.Request;
 import dk.kea.techsomeprotocol.repositories.FriendRequestRepository;
 import dk.kea.techsomeprotocol.repositories.RelationRepository;
 import dk.kea.techsomeprotocol.repositories.UserRepository;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,11 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Map;
 
 /**
  * @author Julius Panduro
@@ -34,17 +30,17 @@ public class RequestController {
     @Autowired
     FriendRequestRepository friendRequests;
 
-    private String ourDomain = "http://localhost:8080llkjklj"; //temp
+    private String ourDomain = "http://localhost:8080"; //temp
 
     @PostMapping("/")
-    public ResponseEntity<HttpStatus> endpointForThisServer(@RequestBody Request request) {
+    public ResponseEntity endpointForThisServer(@RequestBody Request request) {
         System.out.println(request.toString());
         System.out.println(request.method);
 
         switch (request.method) { //-> service? gem i db
             case "add":
                 addRequest(request);
-                return new ResponseEntity<>(HttpStatus.OK); //des email gets a request to be friends (sends a response that is has been seen)
+                return new ResponseEntity<>("Friend added on " + ourDomain, HttpStatus.CREATED); //des email gets a request to be friends (sends a response that is has been seen)
             case "accept":
                 break;//des email accepts the request and "link" the two emails together (sends a response that they are connected)
             case "deny":
@@ -91,23 +87,23 @@ public class RequestController {
         if (ourDomain.equals(request.desHost)) {
             FriendRequest friendRequest = new FriendRequest(request.srcEmail, request.srcHost, request.desEmail, request.desHost);
             friendRequests.save(friendRequest);
-            System.out.println("friend added");
         } else {
             //other domain redirect
             WebClient webClient = WebClient.builder()
                     .baseUrl(request.desHost)
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .build();
-            //todo error with json
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("method", request.method);
+            jsonObject.put("srcEmail", request.srcEmail);
+            jsonObject.put("srcHost", request.srcHost);
+            jsonObject.put("desEmail", request.desEmail);
+            jsonObject.put("desHost", request.desHost);
+            jsonObject.put("version", request.version);
+
             String response = webClient.post()
-                    .body(Mono.just("{" +
-                            "method:" + request.method +
-                            "srcEmail:" + request.srcEmail +
-                            "srcHost:" + request.srcHost +
-                            "desEmail:" + request.desEmail +
-                            "desHost:" + request.desHost +
-                            "version:" + request.version +
-                            "}"), String.class)
+                    .body(Mono.just(jsonObject.toString()), String.class)
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();

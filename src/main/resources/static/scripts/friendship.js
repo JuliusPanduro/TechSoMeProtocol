@@ -22,8 +22,8 @@ document.getElementById('add-new-friend').addEventListener('click', function () 
         body: JSON.stringify(object)
     })
         .then(response => {
-            if(response.status === 200){
-                console.log("200!")
+            if(response.status === 201){
+                console.log("201!")
                 console.log(response)
                 alert("Friend request send")
             }
